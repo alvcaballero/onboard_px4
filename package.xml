@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>aerialcore_onboard_px4</name>
+  <version>0.0.1</version>
+  <description>The aerialcore_onboard_px4 package</description>
+
+  <maintainer email="arturotorres@us.es">Arturo Torres González</maintainer>
+
+  <license>MIT</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <depend>aerialcore_common</depend>
+  <depend>geodesy</depend>
+  <depend>mavros</depend>
+  <depend>mavros_msgs</depend>
+  <depend>mission_lib</depend>
+  <depend>roscpp</depend>
+  <depend>std_msgs</depend>
+  <depend>std_srvs</depend>
+
+  <export>
+    <!-- Other tools can request additional information be placed here -->
+  </export>
+</package>
