@@ -1,0 +1,34 @@
+<launch>
+
+    <!--<arg name="mode" default="sitl"/>
+    <arg name="robot_model" default="standard_vtol"/>-->
+    <arg name="ns" default="/uav_2"/>
+
+    
+    <!--I Launch Gazebo simulation from pure px4 SITL  -->
+        
+    
+    <group ns="$(arg ns)">
+        <!--Launch mavros -->
+        <node pkg="mavros" type="mavros_node" name="mavros" required="false" clear_params="true" output="screen" respawn="true" >
+            <param name="fcu_url" value="udp://:14540@localhost:14556" />
+            <!--<param name="gcs_url" value="" />
+            <param name="target_system_id" value="1" />
+            <param name="target_component_id" value="1" />
+            <param name="fcu_protocol" value="v2.0" />
+
+             load blacklist, config 
+            <rosparam command="load" file="$(find mavros)/launch/apm_pluginlists.yaml" />
+            <rosparam command="load" file="$(find mavros)/launch/apm_config.yaml" />-->
+	    </node>
+
+        <!-- Launch mission_lib node for uav id=1 -->
+        <node pkg="aerialcore_onboard_px4" type="px4_mission_node" name="px4_mission_node" output="screen">
+            <param name="uav_id" value="2"/><!--posible error aqui tmbm value="1"-->
+            <param name="pose_frame_id" value="map"/>
+            <param name="home_pose_parent_frame" value="map"/>
+            <rosparam param="map_origin_geo">[38.13931349915096, -3.173436419425258, 445]</rosparam>
+        </node>
+    </group>
+
+</launch>
