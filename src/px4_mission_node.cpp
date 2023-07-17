@@ -52,6 +52,14 @@ void StopRosbag()
   ROS_WARN("END of ROS BAG");
 }
 
+bool sendFiles(std_srvs::SetBool::Request  &req, std_srvs::SetBool::Response &res){
+  ROS_WARN("Init to pass bag files ");
+  std::string bashscript  = "sshpass -p 112358 rsync -ae ~/bags/ arpa@10.42.0.2:~/bags";
+  system( bashscript.c_str() );
+  res.success = true;
+  res.message = "Success";
+  return true;
+}
 bool newMission(aerialcore_common::ConfigMission::Request& req, aerialcore_common::ConfigMission::Response& res, grvc::Mission* mission) {
     
     if (req.waypoint.size()<3) {
@@ -138,6 +146,7 @@ int main(int _argc, char** _argv) {
         "mission/start_stop",
         boost::bind(startStopMission, _1, _2, &mission)
         );
+    ros::ServiceServer service_send_bags = nh.advertiseService("dji_control/send_bags", sendFiles);
     
     
     n.getParam("px4_mission_node/damping", damping);
