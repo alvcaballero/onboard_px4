@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(aerialcore_onboard_px4)
+project(onboard_px4)
 
 add_compile_options(-std=c++11)
 
