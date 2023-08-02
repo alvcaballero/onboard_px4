@@ -24,6 +24,42 @@
 #include <std_srvs/SetBool.h>
 #include <ros/ros.h>
 
+// global variables
+float damping;
+float start_altitude;
+int uav_id =3;
+
+// for rosbag implementation handle by Álvaro Poma:
+void StartRosbag()
+{
+  std::string id = std::to_string(uav_id);
+  std::string bashscript ("rosbag record -O ~/bags/uav_"+ id +"_");
+
+  char timeString[40];
+  time_t t = time(0);
+  struct tm tm = *localtime(&t);
+
+  ROS_WARN("Start of ROS BAG");
+  strftime(timeString, sizeof(timeString), "%Y_%m_%d_%H_%M", &tm);
+  bashscript = bashscript +  timeString+ ".bag  -e \"/uav_"+ id +"/mavros/(.*)\" __name:=node_bag_uav"+id+" &";
+  system( bashscript.c_str() );
+}
+void StopRosbag()
+{
+  std::string id = std::to_string(uav_id);
+  std::string bashscript  = "rosnode kill node_bag_uav"+id;
+  system( bashscript.c_str() );
+  ROS_WARN("END of ROS BAG");
+}
+
+bool sendFiles(std_srvs::SetBool::Request  &req, std_srvs::SetBool::Response &res){
+  ROS_WARN("Init to pass bag files ");
+  std::string bashscript  = "sshpass -p 112358 rsync -ae ~/bags/ arpa@10.42.0.2:~/bags";
+  system( bashscript.c_str() );
+  res.success = true;
+  res.message = "Success";
+  return true;
+}
 bool newMission(aerialcore_common::ConfigMission::Request& req, aerialcore_common::ConfigMission::Response& res, grvc::Mission* mission) {
     
     if (req.waypoint.size()<3) {
@@ -80,9 +116,11 @@ bool newMission(aerialcore_common::ConfigMission::Request& req, aerialcore_commo
 bool startStopMission(std_srvs::SetBool::Request& req, std_srvs::SetBool::Response& res, grvc::Mission* mission) {
     if (req.data) {
         ROS_WARN("Running mission!");
+        StartRosbag();
         mission->start();
     }
     else {
+        StopRosbag();
         mission->stop();
         ROS_WARN("Stopping mission!");
     }
@@ -94,6 +132,7 @@ bool startStopMission(std_srvs::SetBool::Request& req, std_srvs::SetBool::Respon
 int main(int _argc, char** _argv) {
 
     ros::init(_argc, _argv, "px4_mission_node");
+    
 
     grvc::Mission mission;
 
@@ -107,7 +146,13 @@ int main(int _argc, char** _argv) {
         "mission/start_stop",
         boost::bind(startStopMission, _1, _2, &mission)
         );
-
+    ros::ServiceServer service_send_bags = nh.advertiseService("dji_control/send_bags", sendFiles);
+    
+    
+    n.getParam("px4_mission_node/damping", damping);
+    n.getParam("px4_mission_node/start_altitude", start_altitude);
+    n.getParam("px4_mission_node/uav_id", uav_id);
+    
     ROS_INFO("PX4 Mission Node ready :)");
 
     while (ros::ok()) {
