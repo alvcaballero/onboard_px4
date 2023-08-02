@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>aerialcore_onboard_px4</name>
+  <name>onboard_px4</name>
   <version>0.0.1</version>
   <description>The aerialcore_onboard_px4 package</description>
 
