@@ -146,7 +146,7 @@ int main(int _argc, char** _argv) {
         "mission/start_stop",
         boost::bind(startStopMission, _1, _2, &mission)
         );
-    ros::ServiceServer service_send_bags = nh.advertiseService("dji_control/send_bags", sendFiles);
+    ros::ServiceServer service_send_bags = n.advertiseService("dji_control/send_bags", sendFiles);
     
     
     n.getParam("px4_mission_node/damping", damping);

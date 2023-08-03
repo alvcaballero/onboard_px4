@@ -13,7 +13,7 @@
         </include>
 
         <!-- Launch mission_lib node for uav id=1 -->
-        <node pkg="aerialcore_onboard_px4" type="px4_mission_node" name="px4_mission_node" output="screen">
+        <node pkg="onboard_px4" type="px4_mission_node" name="px4_mission_node" output="screen">
             <param name="uav_id" value="$(arg uav_id)"/>
             <param name="pose_frame_id" value="map"/>
             <param name="home_pose_parent_frame" value="map"/>
