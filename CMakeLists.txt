@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   std_msgs
   std_srvs
+  wirispro_manager
 )
 
 ###################################
@@ -21,7 +22,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
   # INCLUDE_DIRS
   # LIBRARIES ${PROJECT_NAME}
-  CATKIN_DEPENDS aerialcore_common geodesy mavros mavros_msgs mission_lib roscpp std_msgs std_srvs
+  CATKIN_DEPENDS aerialcore_common geodesy mavros mavros_msgs mission_lib roscpp std_msgs std_srvs wirispro_manager
 #  DEPENDS system_lib
 )
 
