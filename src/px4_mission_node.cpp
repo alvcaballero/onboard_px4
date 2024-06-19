@@ -84,7 +84,7 @@ bool newMission(aerialcore_common::ConfigMission::Request &req,
   acommandList.layout.dim[1].label = "nActions";
   acommandList.layout.dim[0].size = req.waypoint.size();
   acommandList.layout.dim[1].size = 10;
-  acommandList.layout.dim[0].stride = req.waypointreq.waypoint.size() * 10;
+  acommandList.layout.dim[0].stride = req.waypoint.size() * 10;
   acommandList.layout.dim[1].stride = 10;
   acommandList.layout.data_offset = 0;
   if (req.waypoint.size() < 3) {
