@@ -9,6 +9,10 @@
   <license>MIT</license>
 
   <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>wirispro_manager</build_depend>
+  <build_export_depend>wirispro_manager</build_export_depend>
+  <exec_depend>wirispro_manager</exec_depend>
+
   <depend>aerialcore_common</depend>
   <depend>geodesy</depend>
   <depend>mavros</depend>
