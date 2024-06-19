@@ -35,6 +35,11 @@
 float damping;
 float start_altitude;
 int uav_id = 3;
+std_msgs::Float64MultiArray acommandList;
+
+ros::ServiceClient _capture_client;
+ros::ServiceClient _start_recording_client;
+ros::ServiceClient _stop_recording_client;
 
 // for rosbag implementation handle by Álvaro Poma:
 void StartRosbag() {
@@ -72,6 +77,16 @@ bool newMission(aerialcore_common::ConfigMission::Request &req,
                 aerialcore_common::ConfigMission::Response &res,
                 grvc::Mission *mission) {
 
+  // fill out the MultiArray message to make a Matrix for actions
+  acommandList.layout.dim.push_back(std_msgs::MultiArrayDimension());
+  acommandList.layout.dim.push_back(std_msgs::MultiArrayDimension());
+  acommandList.layout.dim[0].label = "wp";
+  acommandList.layout.dim[1].label = "nActions";
+  acommandList.layout.dim[0].size = req.waypoint.size();
+  acommandList.layout.dim[1].size = 10;
+  acommandList.layout.dim[0].stride = req.waypointreq.waypoint.size() * 10;
+  acommandList.layout.dim[1].stride = 10;
+  acommandList.layout.data_offset = 0;
   if (req.waypoint.size() < 3) {
     ROS_ERROR("Mission too small! Send a mission with at least 3 waypoints.");
     res.success = false;
@@ -79,8 +94,8 @@ bool newMission(aerialcore_common::ConfigMission::Request &req,
   }
 
   // Clear previous missions
-  mission->clear();
-  mission->pushClear();
+  mission.clear();
+  mission.pushClear();
 
   // Takeoff WP parameters:
   geometry_msgs::PoseStamped takeoff_pose;
@@ -90,7 +105,7 @@ bool newMission(aerialcore_common::ConfigMission::Request &req,
   takeoff_pose.pose.position.z =
       (req.waypoint[0].altitude < 60.0 ? 60.0 : req.waypoint[0].altitude);
 
-  mission->addTakeOffWp(takeoff_pose);
+  mission.addTakeOffWp(takeoff_pose);
 
   // Pass WP parameters:
   std::vector<geometry_msgs::PoseStamped> pass_poses;
@@ -99,13 +114,13 @@ bool newMission(aerialcore_common::ConfigMission::Request &req,
 
   for (auto wp = std::next(req.waypoint.begin());
        wp != std::prev(req.waypoint.end()); ++wp) {
-    pass_pose.pose.position.x = wp->latitude;
-    pass_pose.pose.position.y = wp->longitude;
-    pass_pose.pose.position.z = wp->altitude;
+    pass_pose.pose.position.x = wp.latitude;
+    pass_pose.pose.position.y = wp.longitude;
+    pass_pose.pose.position.z = wp.altitude;
     pass_poses.push_back(pass_pose);
   }
 
-  mission->addPassWpList(pass_poses);
+  mission.addPassWpList(pass_poses);
 
   // Land WP parameters:
   geometry_msgs::PoseStamped land_pose;
@@ -114,10 +129,10 @@ bool newMission(aerialcore_common::ConfigMission::Request &req,
   land_pose.pose.position.y = req.waypoint.back().longitude;
   land_pose.pose.position.z = req.waypoint.back().altitude;
 
-  mission->addLandWp(land_pose);
+  mission.addLandWp(land_pose);
 
   // Send mission to PX4
-  mission->push();
+  mission.push();
 
   ROS_WARN("New mission sent to the UAV!");
 
@@ -131,10 +146,10 @@ bool startStopMission(std_srvs::SetBool::Request &req,
   if (req.data) {
     ROS_WARN("Running mission!");
     StartRosbag();
-    mission->start();
+    mission.start();
   } else {
     StopRosbag();
-    mission->stop();
+    mission.stop();
     ROS_WARN("Stopping mission!");
   }
 
@@ -142,14 +157,14 @@ bool startStopMission(std_srvs::SetBool::Request &req,
   return true;
 }
 void wpReachedCallback(const mavros_msgs::WaypointReached &msg) {
-  ROS_INFO("Wp reached: [%d]", msg->wp_seq);
+  ROS_INFO("Wp reached: [%d]", msg.wp_seq);
   // WP_ACTION_STAY= 0,  WP_ACTION_SIMPLE_SHOT= 1,  WP_ACTION_VIDEO_START= 2,
   // WP_ACTION_VIDEO_STOP= 3,
   //                        // WP_ACTION_CRAFT_YAW = 4,  WP_ACTION_GIMBAL_PITCH
   //                        = 5
   std_srvs::Trigger srv;
 
-  if (acommandList.data[msg->wp_seq * 10] == 1) { // needed more than one?
+  if (acommandList.data[msg.wp_seq * 10] == 1) { // needed more than one?
     // call take a picture service
     if (_capture_client.call(srv)) {
       ROS_INFO("Capture image service called");
@@ -157,7 +172,7 @@ void wpReachedCallback(const mavros_msgs::WaypointReached &msg) {
       ROS_ERROR("Failed to call capture image service");
     }
   }
-  if (acommandList.data[msg->wp_seq * 10] == 2) { // needed more than one?
+  if (acommandList.data[msg.wp_seq * 10] == 2) { // needed more than one?
     // call start video service
     if (_start_recording_client.call(srv)) {
       ROS_INFO("Start recording service called");
@@ -165,7 +180,7 @@ void wpReachedCallback(const mavros_msgs::WaypointReached &msg) {
       ROS_ERROR("Failed to start recording service");
     }
   }
-  if (acommandList.data[msg->wp_seq * 10] == 3) { // needed more than one?
+  if (acommandList.data[msg.wp_seq * 10] == 3) { // needed more than one?
     // call stop video service
     if (_stop_recording_client.call(srv)) {
       ROS_INFO("Stop recording service called");
@@ -196,11 +211,11 @@ int main(int _argc, char **_argv) {
       n.advertiseService("dji_control/send_bags", sendFiles);
 
   ros::ServiceClient _start_recording_client =
-      _nh.serviceClient<std_srvs::Trigger>("/recording_start");
+      n.serviceClient<std_srvs::Trigger>("/recording_start");
   ros::ServiceClient _stop_recording_client =
-      _nh.serviceClient<std_srvs::Trigger>("/recording_stop");
+      n.serviceClient<std_srvs::Trigger>("/recording_stop");
   ros::ServiceClient _capture_client =
-      _nh.serviceClient<std_srvs::Trigger>("/recording_stop");
+      n.serviceClient<std_srvs::Trigger>("/recording_stop");
   ros::Subscriber wp_reached_sub =
       n.subscribe("mission/reached", 1000, wpReachedCallback);
 
