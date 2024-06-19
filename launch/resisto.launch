@@ -1,16 +1,29 @@
 <launch>
 
     <arg name="uav_id" default="3"/>
-
+    <arg name="fcu_url" default="udp://:14550@192.168.144.20:14540" />
+    <arg name="gcs_url" default="" />
+    <arg name="tgt_system" default="1" />
+    <arg name="tgt_component" default="1" />
+    <arg name="log_output" default="screen" />
+    <arg name="fcu_protocol" default="v2.0" />
+    <arg name="respawn_mavros" default="false" />
+    
     <group ns="uav_$(arg uav_id)">
-        <!-- Launch robot id=1 -->
-        <include file="$(find px4_bringup)/launch/spawn_robot.launch">
-            <arg name="id"      value="$(arg uav_id)"/>
-            <arg name="mode"    value="custom"/>
-            <arg name="fcu_url" value="serial:///dev/ttyUSB0:57600"/>
-            <!-- <arg name="gcs_url" value="udp://@10.42.0.129:14550"/> -->
-            <arg name="gcs_url" value="udp://@192.168.0.123:14550"/>
+
+        <include file="$(find mavros)/launch/node.launch">
+                <arg name="pluginlists_yaml" value="$(find mavros)/launch/px4_pluginlists.yaml" />
+                <arg name="config_yaml" value="$(find mavros)/launch/px4_config.yaml" />
+
+                <arg name="fcu_url" value="$(arg fcu_url)" />
+                <arg name="gcs_url" value="$(arg gcs_url)" />
+                <arg name="tgt_system" value="$(arg tgt_system)" />
+                <arg name="tgt_component" value="$(arg tgt_component)" />
+                <arg name="log_output" value="$(arg log_output)" />
+                <arg name="fcu_protocol" value="$(arg fcu_protocol)" />
+                <arg name="respawn_mavros" default="$(arg respawn_mavros)" />
         </include>
+
 
         <!-- Launch mission_lib node for uav id=1 -->
         <node pkg="onboard_px4" type="px4_mission_node" name="px4_mission_node" output="screen">
@@ -19,7 +32,6 @@
             <param name="home_pose_parent_frame" value="map"/>
             <!-- <rosparam param="map_origin_geo">[38.13931349915096, -3.173436419425258, 445]</rosparam> -->
         </node>
-        
         <include file="$(find wirispro_manager)/launch/wirispro_manager_tcp.launch">
         </include>
     </group>
