@@ -94,8 +94,8 @@ bool newMission(aerialcore_common::ConfigMission::Request &req,
   }
 
   // Clear previous missions
-  mission.clear();
-  mission.pushClear();
+  mission->clear();
+  mission->pushClear();
 
   // Takeoff WP parameters:
   geometry_msgs::PoseStamped takeoff_pose;
@@ -105,7 +105,7 @@ bool newMission(aerialcore_common::ConfigMission::Request &req,
   takeoff_pose.pose.position.z =
       (req.waypoint[0].altitude < 60.0 ? 60.0 : req.waypoint[0].altitude);
 
-  mission.addTakeOffWp(takeoff_pose);
+  mission->addTakeOffWp(takeoff_pose);
 
   // Pass WP parameters:
   std::vector<geometry_msgs::PoseStamped> pass_poses;
@@ -114,13 +114,13 @@ bool newMission(aerialcore_common::ConfigMission::Request &req,
 
   for (auto wp = std::next(req.waypoint.begin());
        wp != std::prev(req.waypoint.end()); ++wp) {
-    pass_pose.pose.position.x = wp.latitude;
-    pass_pose.pose.position.y = wp.longitude;
-    pass_pose.pose.position.z = wp.altitude;
+    pass_pose.pose.position.x = wp->latitude;
+    pass_pose.pose.position.y = wp->longitude;
+    pass_pose.pose.position.z = wp->altitude;
     pass_poses.push_back(pass_pose);
   }
 
-  mission.addPassWpList(pass_poses);
+  mission->addPassWpList(pass_poses);
 
   // Land WP parameters:
   geometry_msgs::PoseStamped land_pose;
@@ -129,10 +129,10 @@ bool newMission(aerialcore_common::ConfigMission::Request &req,
   land_pose.pose.position.y = req.waypoint.back().longitude;
   land_pose.pose.position.z = req.waypoint.back().altitude;
 
-  mission.addLandWp(land_pose);
+  mission->addLandWp(land_pose);
 
   // Send mission to PX4
-  mission.push();
+  mission->push();
 
   ROS_WARN("New mission sent to the UAV!");
 
@@ -146,10 +146,10 @@ bool startStopMission(std_srvs::SetBool::Request &req,
   if (req.data) {
     ROS_WARN("Running mission!");
     StartRosbag();
-    mission.start();
+    mission->start();
   } else {
     StopRosbag();
-    mission.stop();
+    mission->stop();
     ROS_WARN("Stopping mission!");
   }
 
