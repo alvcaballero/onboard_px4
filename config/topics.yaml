@@ -1,0 +1,19 @@
+topics_to_filter:
+  - source: "mavros/global_position/global"
+    target: "gcs/gps_position"
+    hz: 2.0
+  - source: "mavros/altitude"
+    target: "gcs/altitude"
+    hz: 2.0
+  - source: "mavros/global_position/compass_hdg"
+    target: "gcs/compass_hdg"
+    hz: 2.0
+  - source: "mavros/local_position/velocity_local"
+    target: "gcs/velocity"
+    hz: 2.0
+  - source: "mavros/battery"
+    target: "gcs/battery_state"
+    hz: 0.5
+  - source: "video_stream_compress"
+    target: "gcs/video_stream_compress"
+    hz: 10.0

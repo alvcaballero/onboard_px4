@@ -17,6 +17,7 @@
   <depend>roscpp</depend>
   <depend>std_msgs</depend>
   <depend>std_srvs</depend>
+  <depend>topic_tools</depend>
 
   <export>
     <!-- Other tools can request additional information be placed here -->
