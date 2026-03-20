@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(onboard_px4)
+project(multiuav_onboard_px4)
 
 add_compile_options(-std=c++11)
 
 ## Find catkin macros and libraries
 find_package(catkin REQUIRED COMPONENTS
-  aerialcore_common
+  multiuav_interfaces
   geodesy
   mavros
   mavros_msgs
@@ -21,7 +21,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
   # INCLUDE_DIRS
   # LIBRARIES ${PROJECT_NAME}
-  CATKIN_DEPENDS aerialcore_common geodesy mavros mavros_msgs mission_lib roscpp std_msgs std_srvs
+  CATKIN_DEPENDS multiuav_interfaces geodesy mavros mavros_msgs mission_lib roscpp std_msgs std_srvs
 #  DEPENDS system_lib
 )
 

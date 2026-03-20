@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import rospy
 
-from aerialcore_common.srv import ConfigMission
+from multiuav_interfaces.srv import ConfigMission
 from geographic_msgs.msg import GeoPoint
 from sensor_msgs.msg import NavSatFix
 

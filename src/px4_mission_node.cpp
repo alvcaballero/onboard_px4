@@ -24,7 +24,7 @@
 // SOFTWARE.
 //----------------------------------------------------------------------------------------------------------------------
 
-#include <aerialcore_common/ConfigMission.h>
+#include <multiuav_interfaces/ConfigMission.h>
 #include <mavros_msgs/WaypointReached.h>
 #include <mission_lib.h>
 #include <ros/ros.h>
@@ -72,8 +72,8 @@ bool sendFiles(std_srvs::SetBool::Request &req,
   res.message = "Success";
   return true;
 }
-bool newMission(aerialcore_common::ConfigMission::Request &req,
-                aerialcore_common::ConfigMission::Response &res,
+bool newMission(multiuav_interfaces::ConfigMission::Request &req,
+                multiuav_interfaces::ConfigMission::Response &res,
                 grvc::Mission *mission) {
 
   // fill out the MultiArray message to make a Matrix for actions
@@ -198,8 +198,8 @@ int main(int _argc, char **_argv) {
   ros::NodeHandle n;
 
   ros::ServiceServer new_mission_srv =
-      n.advertiseService<aerialcore_common::ConfigMission::Request,
-                         aerialcore_common::ConfigMission::Response>(
+      n.advertiseService<multiuav_interfaces::ConfigMission::Request,
+                         multiuav_interfaces::ConfigMission::Response>(
           "mission/new", boost::bind(newMission, _1, _2, &mission));
   ros::ServiceServer start_stop_srv =
       n.advertiseService<std_srvs::SetBool::Request,
