@@ -12,7 +12,7 @@ import yaml
 
 def load_topics():
     rp = rospkg.RosPack()
-    pkg_path = rp.get_path('multiuav_onboard_px4')
+    pkg_path = rp.get_path('onboard_px4')
     config_path = os.path.join(pkg_path, 'config', 'topics.yaml')
 
     with open(config_path, 'r') as f:
