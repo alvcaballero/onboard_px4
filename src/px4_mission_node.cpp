@@ -24,6 +24,7 @@
 // SOFTWARE.
 //----------------------------------------------------------------------------------------------------------------------
 
+#include "wirispro_manager/CameraEthStreamService.h"
 #include <aerialcore_common/ConfigMission.h>
 #include <mavros_msgs/WaypointReached.h>
 #include <mission_lib.h>
