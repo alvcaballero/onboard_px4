@@ -1,0 +1,42 @@
+<launch>
+
+    <!--<arg name="mode" default="sitl"/>
+    <arg name="robot_model" default="standard_vtol"/>-->
+    <arg name="ns" default="/uav_13"/>
+    <arg name="ns1" default="/uav_14"/>
+    <arg name="ns2" default="/uav_15"/>
+    
+    <group ns="$(arg ns)">
+
+        <!-- Launch mission_lib node for uav id=1 -->
+        <node pkg="onboard_px4" type="px4_mission_node" name="px4_mission_node" output="screen">
+            <param name="uav_id" value="13"/><!--posible error aqui tmbm value="1"-->
+            <param name="pose_frame_id" value="map"/>
+            <param name="home_pose_parent_frame" value="map"/>
+            <rosparam param="map_origin_geo">[38.13931349915096, -3.173436419425258, 445]</rosparam>
+        </node>
+    </group>
+
+    <group ns="$(arg ns1)">
+
+        <!-- Launch mission_lib node for uav id=1 -->
+        <node pkg="onboard_px4" type="px4_mission_node" name="px4_mission_node" output="screen">
+            <param name="uav_id" value="14"/><!--posible error aqui tmbm value="1"-->
+            <param name="pose_frame_id" value="map"/>
+            <param name="home_pose_parent_frame" value="map"/>
+            <rosparam param="map_origin_geo">[38.13931349915096, -3.173436419425258, 445]</rosparam>
+        </node>
+    </group>
+
+    <group ns="$(arg ns2)">
+
+        <!-- Launch mission_lib node for uav id=1 -->
+        <node pkg="onboard_px4" type="px4_mission_node" name="px4_mission_node" output="screen">
+            <param name="uav_id" value="15"/><!--posible error aqui tmbm value="1"-->
+            <param name="pose_frame_id" value="map"/>
+            <param name="home_pose_parent_frame" value="map"/>
+            <rosparam param="map_origin_geo">[38.13931349915096, -3.173436419425258, 445]</rosparam>
+        </node>
+    </group>
+
+</launch>
